@@ -1,0 +1,70 @@
+#Creating Multiple Pod in One YML File Using Deployment 
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: my-service1
+spec:
+  type: NodePort
+  ports: 
+  - port: 80
+    name: my-service1
+    targetPort: 80
+    nodePort: 32456
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod1
+spec:
+  selector:
+   matchLabels:
+     app: nginx
+  template:
+    metadata:
+     labels:
+      app: nginx     
+    spec:               
+      containers:     #Multiple Containers inside one pod
+      - name: p1c01
+        image: nginx:latest
+        command: ['sh', '-c', 'echo "pod1 container 1, Kubernetes!" && sleep 3600']
+        ports:
+          - containerPort: 80
+      - name: p1c02
+        image: nginx:latest
+        command: ['sh', '-c', 'echo "pod2 container2, Kubernetes!" && sleep 3600']  
+        ports:
+         - containerPort: 80     
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod2
+spec:
+  selector:
+   matchLabels:
+     app: nginx
+  template:
+    metadata:
+     labels:
+      app: nginx   
+    spec:
+       containers:     #Multiple Containers inside another pod
+       - name: p2c01
+         image: nginx:latest
+         command: ['sh', '-c', 'echo "pod2 container1, Kubernetes!" && sleep 3600']  
+         ports:
+          - containerPort: 80
+       - name: p2c02
+         image: nginx:latest
+         command: ['sh', '-c', 'echo "pod2 container2, Kubernetes!" && sleep 3600']
+         ports:
+          - containerPort: 80  
+       - name: p2c03
+         image: nginx:latest
+         command: ['sh', '-c', 'echo "pod2 container3, Kubernetes!" && sleep 3600']  
+         ports:
+          - containerPort: 80                                
